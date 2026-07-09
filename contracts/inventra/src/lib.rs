@@ -667,6 +667,39 @@ impl InventraContract {
         Self::get_item_internal(&env, &item_id)
     }
 
+    /// Get a warehouse by ID
+    pub fn get_warehouse(env: Env, warehouse_id: String) -> Warehouse {
+        Self::get_warehouse_internal(&env, &warehouse_id)
+    }
+
+    /// Get a transfer record by ID
+    pub fn get_transfer(env: Env, transfer_id: String) -> TransferRecord {
+        env.storage()
+            .persistent()
+            .get(&DataKey::Transfer(transfer_id))
+            .unwrap_or_else(|| panic!("transfer record not found"))
+    }
+
+    /// Get a stock adjustment record by ID
+    pub fn get_adjustment(env: Env, adjustment_id: String) -> StockAdjustment {
+        env.storage()
+            .persistent()
+            .get(&DataKey::Adjustment(adjustment_id))
+            .unwrap_or_else(|| panic!("adjustment record not found"))
+    }
+
+    /// Check whether a given address is the current owner of an item
+    pub fn verify_ownership(env: Env, item_id: String, address: Address) -> bool {
+        if let Some(item) = env
+            .storage()
+            .persistent()
+            .get::<DataKey, InventoryItem>(&DataKey::Item(item_id))
+        {
+            item.owner == address
+        } else {
+            false
+        }
+    }
 
     
 }
