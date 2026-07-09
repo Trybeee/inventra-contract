@@ -728,7 +728,34 @@ impl InventraContract {
         (items, warehouses, transfers)
     }
 
-    
+    // ----------------------------------------------------------
+    // INTERNAL HELPERS
+    // ----------------------------------------------------------
+
+    fn get_item_internal(env: &Env, item_id: &String) -> InventoryItem {
+        env.storage()
+            .persistent()
+            .get(&DataKey::Item(item_id.clone()))
+            .unwrap_or_else(|| panic!("item not found"))
+    }
+
+    fn get_warehouse_internal(env: &Env, warehouse_id: &String) -> Warehouse {
+        env.storage()
+            .persistent()
+            .get(&DataKey::Warehouse(warehouse_id.clone()))
+            .unwrap_or_else(|| panic!("warehouse not found"))
+    }
+
+    fn is_admin(env: &Env, caller: &Address) -> bool {
+        let admin: Option<Address> = env.storage().instance().get(&DataKey::Admin);
+        admin.map(|a| a == *caller).unwrap_or(false)
+    }
+
+    fn require_admin(env: &Env, caller: &Address) {
+        if !Self::is_admin(env, caller) {
+            panic!("unauthorized: caller is not admin");
+        }
+    }
 }
 
 mod test;
