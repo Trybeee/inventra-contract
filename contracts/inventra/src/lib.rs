@@ -642,6 +642,31 @@ impl InventraContract {
         );
     }
 
+    // ----------------------------------------------------------
+    // ADMIN MANAGEMENT
+    // ----------------------------------------------------------
+
+    /// Transfer admin role to a new address.
+    pub fn transfer_admin(env: Env, current_admin: Address, new_admin: Address) {
+        current_admin.require_auth();
+        Self::require_admin(&env, &current_admin);
+        env.storage().instance().set(&DataKey::Admin, &new_admin);
+
+        env.events().publish(
+            (Symbol::new(&env, "admin_transferred"), new_admin.clone()),
+            new_admin,
+        );
+    }
+
+    // ----------------------------------------------------------
+    // READ-ONLY QUERIES
+    // ----------------------------------------------------------
+
+    /// Get an inventory item by ID
+    pub fn get_item(env: Env, item_id: String) -> InventoryItem {
+        Self::get_item_internal(&env, &item_id)
+    }
+
 
     
 }
