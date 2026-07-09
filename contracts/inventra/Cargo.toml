@@ -1,0 +1,17 @@
+[package]
+name = "inventra"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Inventra — Decentralized inventory management on Stellar Soroban"
+authors = ["Inventra Team"]
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }
