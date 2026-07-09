@@ -701,6 +701,33 @@ impl InventraContract {
         }
     }
 
+    /// Check whether an item exists on-chain
+    pub fn item_exists(env: Env, item_id: String) -> bool {
+        env.storage()
+            .persistent()
+            .has(&DataKey::Item(item_id))
+    }
+
+    /// Get the current stock quantity for an item
+    pub fn get_stock_quantity(env: Env, item_id: String) -> u64 {
+        let item = Self::get_item_internal(&env, &item_id);
+        item.quantity
+    }
+
+    /// Get the current warehouse for an item
+    pub fn get_item_warehouse(env: Env, item_id: String) -> String {
+        let item = Self::get_item_internal(&env, &item_id);
+        item.warehouse_id
+    }
+
+    /// Get platform-wide stats
+    pub fn get_stats(env: Env) -> (u32, u32, u32) {
+        let items:      u32 = env.storage().instance().get(&DataKey::TotalItems).unwrap_or(0);
+        let warehouses: u32 = env.storage().instance().get(&DataKey::TotalWarehouses).unwrap_or(0);
+        let transfers:  u32 = env.storage().instance().get(&DataKey::TotalTransfers).unwrap_or(0);
+        (items, warehouses, transfers)
+    }
+
     
 }
 
